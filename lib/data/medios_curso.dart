@@ -21,17 +21,14 @@ class MedioPalabra {
 
 /// Palabras cuyo nombre de archivo no coincide con su texto en español.
 const Map<String, String> _alias = {
-  'madre': 'mama',
-  'cerdo': 'credo',
-  'cuanada': 'cunada',
-  'cuanado': 'cunado',
+  
   'que_dios_te_bendiga': 'que_dios_te_vendiga',
   'eres_feo_a': 'eres_feo',
   'cuarto_habitacion': 'habitacion',
   'canasta_bolsa': 'canasta',
   'manta_cobija': 'manta',
-  'caserola': 'cacerola',
-  'fegadero': 'fregadero',
+ 
+
   'dedos_de_la_mano': 'dedos_mano',
   'dedos_del_pie': 'dedos_pie',
   // Números: en curso_data.dart son dígitos, en las imágenes son palabras.
