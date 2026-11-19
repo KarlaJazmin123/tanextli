@@ -72,7 +72,7 @@ const Map<String, String> _imagenes = {
   'Animales|colibri': 'assets/images/animales/colibri.png',
   'Animales|conejo': 'assets/images/animales/conejo.png',
   'Animales|coyote': 'assets/images/animales/coyote.png',
-  'Animales|credo': 'assets/images/animales/credo.png',
+  'Animales|cerdo': 'assets/images/animales/cerdo.png',
   'Animales|gallina': 'assets/images/animales/gallina.png',
   'Animales|gallo': 'assets/images/animales/gallo.png',
   'Animales|gato': 'assets/images/animales/gato.png',
