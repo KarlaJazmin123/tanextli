@@ -4,7 +4,7 @@ import '../widgets/tani_widget.dart';
 import '../services/auth_service.dart';
 import '../models/usuario.dart';
 import 'login_screen.dart';
-import 'lesson intro.dart';
+import 'lesson_intro.dart';
 import 'profile_screen.dart';
 
 /// Representa una tarjeta de categoría en el grid principal.

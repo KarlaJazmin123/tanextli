@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../utils/colors.dart';
-import 'category lessons.dart';
+import 'category_lessons.dart';
 
 /// Pantalla previa a la categoría: explica qué trae cada lección.
 /// Uso: Navigator.push(context, MaterialPageRoute(
