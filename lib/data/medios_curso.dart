@@ -1,17 +1,5 @@
 import 'curso_data.dart';
 
-/// Imagen y audio de cada palabra del curso.
-///
-/// IMÁGENES: ya están las 191 en assets/images/<categoria>/<palabra>.png.
-/// La imagen de una palabra se encuentra a partir de su texto en español
-/// (se quitan acentos y mayúsculas: "Cuídate  mucho" -> cuidate_mucho) y de
-/// la clave de su categoría en curso_data.dart. Las palabras cuyo nombre de
-/// archivo es distinto están en [_alias].
-///
-/// AUDIOS: los audios están en el servidor. Mientras no se conecten, el
-/// audio queda en null y la pantalla avisa que no está disponible. Cuando
-/// tengas las URLs, llena [_audios] (clave igual a la de [_imagenes]) o
-/// reemplaza [_audioDe] para pedirlas al servidor.
 class MedioPalabra {
   final String? imagen;
   final String? audio;
@@ -21,9 +9,9 @@ class MedioPalabra {
 
 /// Palabras cuyo nombre de archivo no coincide con su texto en español.
 const Map<String, String> _alias = {
-   'Madre': 'mama',
+  'mama': 'mama',
   'que_dios_te_bendiga': 'que_dios_te_vendiga',
-  'eres_feo_a': 'eres_feo',
+  'eres_feo': 'eres_feo',
   'cuarto_habitacion': 'habitacion',
   'canasta_bolsa': 'canasta',
   'manta_cobija': 'manta',
@@ -54,12 +42,12 @@ const Map<String, String> _alias = {
   '20': 'veinte',
 };
 
-/// Audios por palabra: 'Categoria|nombre' -> URL (http...) o ruta de asset.
+
 const Map<String, String> _audios = {
-  // 'Familia|padre': 'https://olo.tail0de9ec.ts.net/audios/padre.mp3',
+
 };
 
-/// Clave 'Categoria|nombre' -> ruta de la imagen en assets.
+
 const Map<String, String> _imagenes = {
   // Animales
   'Animales|aguila': 'assets/images/animales/aguila.png',
@@ -160,7 +148,7 @@ const Map<String, String> _imagenes = {
   'Frases|no_tengo': 'assets/images/frases/no_tengo.png',
   'Frases|poco': 'assets/images/frases/poco.png',
   'Frases|que_descanses': 'assets/images/frases/que_descanses.png',
-  'Frases|que_dios_te_vendiga': 'assets/images/frases/que_dios_te_vendiga.png',
+  'Frases|que_dios_te_bendiga': 'assets/images/frases/que_dios_te_bendiga.png',
   'Frases|que_necesitas': 'assets/images/frases/que_necesitas.png',
   'Frases|que_te_vaya_bien': 'assets/images/frases/que_te_vaya_bien.png',
   'Frases|que_tengas_un_buen_dia': 'assets/images/frases/que_tengas_un_buen_dia.png',
