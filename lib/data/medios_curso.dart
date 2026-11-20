@@ -21,7 +21,7 @@ class MedioPalabra {
 
 /// Palabras cuyo nombre de archivo no coincide con su texto en español.
 const Map<String, String> _alias = {
-  
+   'Madre': 'mama',
   'que_dios_te_bendiga': 'que_dios_te_vendiga',
   'eres_feo_a': 'eres_feo',
   'cuarto_habitacion': 'habitacion',
