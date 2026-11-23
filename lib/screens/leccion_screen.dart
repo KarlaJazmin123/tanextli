@@ -183,7 +183,7 @@ class _LeccionScreenState extends State<LeccionScreen> {
     } catch (e) {
       debugPrint('[Audio] ERROR: $e');
       if (mounted) setState(() => _reproduciendo = false);
-      _avisar('No se pudo reproducir el audio. Revisa tu conexión.');
+            _avisar('Error de audio: $e');
     }
   }
 
