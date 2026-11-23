@@ -8,6 +8,7 @@ import 'package:http/http.dart' as http;
 import '../data/curso_data.dart';
 import '../data/medios_curso.dart';
 import '../utils/colors.dart';
+import '../widgets/tani_widget.dart';
 
 enum _Fase { intro, palabra, fin }
 
@@ -16,8 +17,8 @@ enum _Intento { esperando, grabando, bien, reintentar }
 /// Pantalla de una lección (una subcategoría de curso_data.dart):
 ///   1. Intro: lista de palabras + botón "Comenzar".
 ///   2. Por cada palabra: imagen, escuchar el audio, mantener presionado el
-///      micrófono para repetir, y un mensaje da retroalimentación.
-///   3. Fin: mensaje de felicitación y se cierra con Navigator.pop(context, true).
+///      micrófono para repetir, y Tani da retroalimentación.
+///   3. Fin: Tani felicita y se cierra con Navigator.pop(context, true).
 ///
 /// Devuelve true si el niño terminó la lección (null/false si salió antes).
 class LeccionScreen extends StatefulWidget {
@@ -298,9 +299,13 @@ class _LeccionScreenState extends State<LeccionScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            child: _globo('Hoy aprenderemos ${palabras.length} palabras'),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(child: _globo('Hoy aprenderemos ${palabras.length} palabras')),
+              const SizedBox(width: 12),
+              const TaniWidget(size: 120),
+            ],
           ),
           const SizedBox(height: 24),
           Expanded(
@@ -379,9 +384,13 @@ class _LeccionScreenState extends State<LeccionScreen> {
             ),
           ),
           const SizedBox(height: 14),
-          SizedBox(
-            width: double.infinity,
-            child: _globo(_mensajeTani),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const TaniWidget(size: 110),
+              const SizedBox(width: 12),
+              Expanded(child: _globo(_mensajeTani)),
+            ],
           ),
           const SizedBox(height: 16),
           Container(
@@ -564,6 +573,8 @@ class _LeccionScreenState extends State<LeccionScreen> {
         children: [
           _flechaAtras(),
           const Spacer(),
+          const TaniWidget(size: 160),
+          const SizedBox(height: 16),
           _globo('¡Terminaste las ${_sub.palabras.length} palabras de '
               '“${_sub.nombre}”! Lo hiciste muy bien'),
           const Spacer(),
