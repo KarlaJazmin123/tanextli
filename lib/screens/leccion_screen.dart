@@ -1,12 +1,13 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 import '../data/curso_data.dart';
 import '../data/medios_curso.dart';
 import '../utils/colors.dart';
-import '../widgets/tani_widget.dart';
 
 enum _Fase { intro, palabra, fin }
 
@@ -15,8 +16,8 @@ enum _Intento { esperando, grabando, bien, reintentar }
 /// Pantalla de una lección (una subcategoría de curso_data.dart):
 ///   1. Intro: lista de palabras + botón "Comenzar".
 ///   2. Por cada palabra: imagen, escuchar el audio, mantener presionado el
-///      micrófono para repetir, y Tani da retroalimentación.
-///   3. Fin: Tani felicita y se cierra con Navigator.pop(context, true).
+///      micrófono para repetir, y un mensaje da retroalimentación.
+///   3. Fin: mensaje de felicitación y se cierra con Navigator.pop(context, true).
 ///
 /// Devuelve true si el niño terminó la lección (null/false si salió antes).
 class LeccionScreen extends StatefulWidget {
@@ -58,6 +59,9 @@ class _LeccionScreenState extends State<LeccionScreen> {
   final _player = AudioPlayer();
   final _random = Random();
 
+  /// URL del audio -> archivo ya descargado en el celular.
+  static final Map<String, String> _audiosDescargados = {};
+
   _Fase _fase = _Fase.intro;
   int _i = 0; // palabra actual
   _Intento _intento = _Intento.esperando;
@@ -73,6 +77,10 @@ class _LeccionScreenState extends State<LeccionScreen> {
   @override
   void initState() {
     super.initState();
+    _player.onLog.listen(
+      (m) => debugPrint('[Audio] log: $m'),
+      onError: (Object e) => debugPrint('[Audio] error del reproductor: $e'),
+    );
     _player.onPlayerComplete.listen((_) {
       if (mounted) setState(() => _reproduciendo = false);
     });
@@ -118,26 +126,63 @@ class _LeccionScreenState extends State<LeccionScreen> {
   // ---------------------------------------------------------------- Audio
 
   void _avisar(String texto) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(SnackBar(content: Text(texto)));
   }
 
+  /// Descarga el audio una vez y devuelve la ruta del archivo local.
+  /// (Los .m4a no siempre se pueden reproducir "en streaming" desde el
+  /// servidor; descargados completos sí.)
+  Future<String> _descargarAudio(String url) async {
+    final guardado = _audiosDescargados[url];
+    if (guardado != null && File(guardado).existsSync()) return guardado;
+
+    debugPrint('[Audio] descargando $url');
+    final respuesta =
+        await http.get(Uri.parse(url)).timeout(const Duration(seconds: 15));
+    debugPrint('[Audio] respuesta ${respuesta.statusCode}, '
+        '${respuesta.bodyBytes.length} bytes, '
+        'tipo: ${respuesta.headers['content-type']}');
+    if (respuesta.statusCode != 200) {
+      throw HttpException('El servidor respondió ${respuesta.statusCode}');
+    }
+
+    final carpeta = Directory('${Directory.systemTemp.path}/tanextli_audios');
+    await carpeta.create(recursive: true);
+    final archivo = File('${carpeta.path}/${url.hashCode}.m4a');
+    await archivo.writeAsBytes(respuesta.bodyBytes, flush: true);
+
+    _audiosDescargados[url] = archivo.path;
+    return archivo.path;
+  }
+
   Future<void> _reproducir() async {
     final audio = medioDe(widget.categoriaKey, _palabra)?.audio;
+    debugPrint('[Audio] ${widget.categoriaKey} | ${_palabra.espanol} -> $audio');
     if (audio == null) {
       _avisar('El audio de esta palabra todavía no está disponible.');
       return;
     }
+
+    final indice = _i; // por si el niño cambia de palabra mientras descarga
     try {
       await _player.stop();
       setState(() => _reproduciendo = true);
-      await _player.play(
-        audio.startsWith('http') ? UrlSource(audio) : AssetSource(audio),
-      );
-    } catch (_) {
+
+      final Source fuente = audio.startsWith('http')
+          ? DeviceFileSource(await _descargarAudio(audio))
+          : AssetSource(audio);
+
+      if (!mounted || indice != _i || _fase != _Fase.palabra) return;
+      await _player.setVolume(1.0);
+      await _player.play(fuente).timeout(const Duration(seconds: 10));
+      debugPrint('[Audio] reproduciendo');
+    } catch (e) {
+      debugPrint('[Audio] ERROR: $e');
       if (mounted) setState(() => _reproduciendo = false);
-      _avisar('No se pudo reproducir el audio.');
+      _avisar('No se pudo reproducir el audio. Revisa tu conexión.');
     }
   }
 
@@ -253,13 +298,9 @@ class _LeccionScreenState extends State<LeccionScreen> {
             ),
           ),
           const SizedBox(height: 20),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(child: _globo('Hoy aprenderemos ${palabras.length} palabras')),
-              const SizedBox(width: 12),
-              const TaniWidget(size: 120),
-            ],
+          SizedBox(
+            width: double.infinity,
+            child: _globo('Hoy aprenderemos ${palabras.length} palabras'),
           ),
           const SizedBox(height: 24),
           Expanded(
@@ -338,13 +379,9 @@ class _LeccionScreenState extends State<LeccionScreen> {
             ),
           ),
           const SizedBox(height: 14),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const TaniWidget(size: 110),
-              const SizedBox(width: 12),
-              Expanded(child: _globo(_mensajeTani)),
-            ],
+          SizedBox(
+            width: double.infinity,
+            child: _globo(_mensajeTani),
           ),
           const SizedBox(height: 16),
           Container(
@@ -527,8 +564,6 @@ class _LeccionScreenState extends State<LeccionScreen> {
         children: [
           _flechaAtras(),
           const Spacer(),
-          const TaniWidget(size: 160),
-          const SizedBox(height: 16),
           _globo('¡Terminaste las ${_sub.palabras.length} palabras de '
               '“${_sub.nombre}”! Lo hiciste muy bien'),
           const Spacer(),
