@@ -57,14 +57,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/images/animales/
-    - assets/images/colores/
-    - assets/images/familia/
-    - assets/images/frases/
-    - assets/images/numeros/
-    - assets/images/objetos/
-    - assets/images/partes_del_cuerpo/
-    - assets/images/sentimientos/
+
     
 
   # The following line ensures that the Material Icons font is
